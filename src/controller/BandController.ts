@@ -46,13 +46,14 @@ export class BandController {
             new Authenticator
           )
           const band = await bandBusiness.getBandDetailByIdOrName(input)
-
+          
+          res.status(200).send(band)
         } catch (error) {
             res.status(error.customErrorCode || 400).send({
                 message: error.message
             })
         } finally{
-
+            await BaseDatabase.destroyConnection()
         }
     }
 }

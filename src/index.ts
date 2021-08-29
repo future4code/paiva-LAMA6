@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import {AddressInfo} from "net";
 import express from "express";
 import { userRouter } from "./routes/userRouter";
-import { bandRouter } from "./routes/bandRoute";
+import { bandRouter } from "./routes/bandRouter";
 dotenv.config();
 const app = express();
 

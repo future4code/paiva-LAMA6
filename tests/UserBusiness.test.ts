@@ -1,6 +1,6 @@
 import { UserBusiness } from "../src/business/UserBusiness";
 import { NotFoundError } from "../src/error/NotFoundError";
-import { User, UserInputDTO, UserRole } from "../src/model/User";
+import { LoginInputDTO, User, UserInputDTO, UserRole } from "../src/model/User";
 
 const userDatabase = {
     createUser: jest.fn(async (user: User)=>{})
@@ -40,6 +40,7 @@ const hashManager = {
     hash: jest.fn((password: string)=>"LABENU_SECRET_PASS_HASH"),
     compare: jest.fn((text:string, hash: string)=> text === "123123" ? true: false)
 }
+
 const userBusiness = new UserBusiness(
     userDatabase as any,
     idGenerator as any,
@@ -150,5 +151,94 @@ describe("SignUp Test Flow", ()=>{
             expect(error.message).toBe("Invalid input")  
             expect(error.code).toBe(417)         
         }
+    })
+    test("Should return token", async()=>{
+        expect.assertions(1)
+        
+        const user = {   
+            email: "email@teste.com",        
+            name: "Labenu", 
+            password: "123123",   
+            role:"NORMAL"
+        } as UserInputDTO
+
+          const result = await userBusiness.createUser(user)
+          expect(result).toBe("token_something")      
+    })
+})
+
+describe("SignIn Test Flow", () => {
+    test("Should return an error when no user linked to email", async()=> {
+        expect.assertions(2)
+
+        const userlogin = {
+           email: "email@email.com",
+           password: "123123"           
+        } as LoginInputDTO
+
+        try {
+          await userBusiness.authUserByEmail(login)  
+        } catch (error) {
+            expect(error.message).toBe(`Unable to found user with email: ${login.email}`)
+            expect(error.code).toBe(404)
+        }
+    })
+
+    test("Should return an error when wrong password", async()=> {
+        expect.assertions(2)
+
+        const userlogin = {
+           email: "teste@email.com",
+           password: "123456"           
+        } as LoginInputDTO
+
+        try {
+          await userBusiness.authUserByEmail(login)  
+        } catch (error) {
+            expect(error.message).toBe("Invalid password")
+            expect(error.code).toBe(417)
+        }
+    })
+
+    test("Should return an error when no password", async()=> {
+        expect.assertions(2)
+
+        const userlogin = {
+           email: "teste@email.com"                  
+        } as LoginInputDTO
+
+        try {
+          await userBusiness.authUserByEmail(login)  
+        } catch (error) {
+            expect(error.message).toBe("Invalid input")
+            expect(error.code).toBe(417)
+        }
+    })
+
+    test("Should return an error when no email", async()=> {
+        expect.assertions(2)
+
+        const userlogin = {
+            password: "123456"                         
+        } as LoginInputDTO
+
+        try {
+          await userBusiness.authUserByEmail(login)  
+        } catch (error) {
+            expect(error.message).toBe("Invalid input")
+            expect(error.code).toBe(417)
+        }
+    })
+
+    test("Should return an acces token", async()=>{
+        expect.assertions(1)
+
+        const userLogin ={
+            email:"teste@email.com",
+            password: "123123",
+        } as LoginInputDTO
+
+        const result = await UserBusiness.authUserByEmail(userLogin)
+        expect(result)
     })
 })

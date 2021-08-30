@@ -7,8 +7,17 @@ import { userRouter } from "../routes/userRouter";
 import { InvalidInputError } from "../error/invalidInputError";
 
 export class UserBusiness {
-    
+    contructor(
+        private userDatabase: UserDatabase,
+        private idGenerator: IdGenerator,
+        private hashManager: HashManager,
+        private authenticator: Authenticator
+    ){}
+
     async createUser(user: UserInputDTO) {
+        if(!user.email && !user.name && !user.password && !user.role){
+            throw new InvalidInputError("Invalid input to signup")
+        }
 
         const idGenerator = new IdGenerator();
         const id = idGenerator.generate();

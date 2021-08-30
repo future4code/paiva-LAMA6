@@ -230,7 +230,7 @@ describe("SignIn Test Flow", () => {
         }
     })
 
-    test("Should return an acces token", async()=>{
+    test("Should return an error when no access token", async()=>{
         expect.assertions(1)
 
         const userLogin ={
@@ -239,6 +239,7 @@ describe("SignIn Test Flow", () => {
         } as LoginInputDTO
 
         const result = await UserBusiness.authUserByEmail(userLogin)
-        expect(result)
+        expect(result).toBe("token_something")
     })
+    
 })
